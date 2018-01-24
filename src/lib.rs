@@ -1,4 +1,4 @@
-//! Crate to interface the TB6612FNG, a dual H-bridge motor driver
+//! Crate to interface full H-bridge motor drivers
 
 #![deny(missing_docs)]
 #![deny(warnings)]
@@ -6,44 +6,36 @@
 
 extern crate embedded_hal;
 
+pub mod ic;
+
+use core::marker::PhantomData;
+
 use embedded_hal::digital::OutputPin;
 use embedded_hal::PwmPin;
 
-/// A single H-bridge
-pub struct Motor<IN1, IN2, PWM> {
-    in1: IN1,
-    in2: IN2,
-    pwm: PWM,
-}
-
-impl<IN1, IN2, PWM> Motor<IN1, IN2, PWM>
+/// A full H-bridge motor driver
+pub struct Motor<IN1, IN2, PWM, IC>
 where
     IN1: OutputPin,
     IN2: OutputPin,
     PWM: PwmPin,
 {
-    /// Creates a new `Motor`
-    pub fn new(mut in1: IN1, mut in2: IN2, mut pwm: PWM) -> Self {
-        // initial state: brake
-        in1.set_high();
-        in2.set_high();
+    in1: IN1,
+    in2: IN2,
+    pwm: PWM,
+    _ic: PhantomData<IC>,
+}
 
-        pwm.enable();
-
-        Motor { in1, in2, pwm }
-    }
-
+impl<IN1, IN2, PWM, IC> Motor<IN1, IN2, PWM, IC>
+where
+    IN1: OutputPin,
+    IN2: OutputPin,
+    PWM: PwmPin,
+{
     /// Brakes the motor
     pub fn brake(&mut self) -> &mut Self {
         self.in1.set_high();
         self.in2.set_high();
-        self
-    }
-
-    /// Lets the motor coast
-    pub fn coast(&mut self) -> &mut Self {
-        self.in1.set_low();
-        self.in2.set_low();
         self
     }
 
@@ -64,6 +56,59 @@ where
     /// Changes the motor speed
     pub fn speed(&mut self, duty: PWM::Duty) -> &mut Self {
         self.pwm.set_duty(duty);
+        self
+    }
+}
+
+impl<IN1, IN2, PWM> Motor<IN1, IN2, PWM, ic::L298>
+where
+    IN1: OutputPin,
+    IN2: OutputPin,
+    PWM: PwmPin,
+{
+    /// Creates a new `Motor`
+    pub fn l298(mut in1: IN1, mut in2: IN2, mut pwm: PWM) -> Self {
+        // initial state: brake
+        in1.set_high();
+        in2.set_high();
+
+        pwm.enable();
+
+        Motor {
+            in1,
+            in2,
+            pwm,
+            _ic: PhantomData,
+        }
+    }
+}
+
+impl<IN1, IN2, PWM> Motor<IN1, IN2, PWM, ic::TB6612FNG>
+where
+    IN1: OutputPin,
+    IN2: OutputPin,
+    PWM: PwmPin,
+{
+    /// Creates a new `Motor`
+    pub fn tb6612fng(mut in1: IN1, mut in2: IN2, mut pwm: PWM) -> Self {
+        // initial state: brake
+        in1.set_high();
+        in2.set_high();
+
+        pwm.enable();
+
+        Motor {
+            in1,
+            in2,
+            pwm,
+            _ic: PhantomData,
+        }
+    }
+
+    /// Lets the motor coast
+    pub fn coast(&mut self) -> &mut Self {
+        self.in1.set_low();
+        self.in2.set_low();
         self
     }
 }

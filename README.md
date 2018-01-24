@@ -1,10 +1,6 @@
-# `tb6612fng`
+# `motor-driver`
 
-> Crate to interface the TB6612FNG, a dual H bridge motor driver
-
-There are lots of motor driver ICs out there. Their functionality (modulo power rating) is about the
-same but some expose different interfaces. Eventually, this crate will turn into a more general
-`h_bridge` crate that provides interfaces to the most common motor driver ICs.
+> Crate to interface full H-bridge motor drivers
 
 ## License
 
