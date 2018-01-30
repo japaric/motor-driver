@@ -53,8 +53,13 @@ where
         self
     }
 
+    /// Returns the maximum
+    pub fn get_max_duty(&mut self) -> PWM::Duty {
+        self.pwm.get_max_duty()
+    }
+
     /// Changes the motor speed
-    pub fn speed(&mut self, duty: PWM::Duty) -> &mut Self {
+    pub fn duty(&mut self, duty: PWM::Duty) -> &mut Self {
         self.pwm.set_duty(duty);
         self
     }
