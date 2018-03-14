@@ -19,3 +19,15 @@ pub struct TB6612FNG;
 ///
 /// (IN1, IN2, PWM) = (In1, In2, EnA) OR (In3, In4, EnB)
 pub struct L298;
+
+/// TI's DRV8835 dual DC motor driver in phase/enable mode
+///
+/// # Connections
+///
+/// - PHASE to xPHASE/xIN1
+/// - ENABLE to xENABLE/xIN2
+///
+/// where x = A or B
+///
+/// MODE pin needs to be driven high for phase/enable control mode
+pub struct DRV8835PE;
