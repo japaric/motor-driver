@@ -4,4 +4,4 @@ name = "motor-driver"
 version = "0.1.0"
 
 [dependencies.embedded-hal]
-version = "0.1.0"
+version = "0.2.0"
